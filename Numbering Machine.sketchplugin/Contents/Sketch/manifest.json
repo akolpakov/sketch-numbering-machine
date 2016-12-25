@@ -1,0 +1,17 @@
+{
+  "name": "Numbering Machine",
+  "description": "Sketch plugin to generate PDF document out of selected artboards with numbers in place of placeholder",
+  "author": "Andrey Kolpakov",
+  "homepage": "http://github.com/aakolpakov/sketch-numbering-machine",
+  "version": "0.1",
+  "identifier": "com.sketchapp.aakolpakov.sketch-numbering-machine",
+  "commands": [
+    {
+      "script" : "export.js",
+      "handler" : "onRun",
+      "shortcut" : "",
+      "name" : "Export selected artboards",
+      "identifier" : "export_selected_artboards"
+    }
+  ]
+}
