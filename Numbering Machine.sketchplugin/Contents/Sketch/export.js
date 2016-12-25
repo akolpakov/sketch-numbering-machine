@@ -1,17 +1,18 @@
-SETTINGS_NAME_TO_REPLACE = 'replace';
+@import 'dialog.js'
+@import 'config.js'
 
-SETTINGS_TEMPLATE = '0001-[*]';
-SETTINGS_PAD_SIZE = 4;
-SETTINGS_PAD_STRING = '0';
-SETTINGS_NUMBER_FROM = 1;
-SETTINGS_NUMBER_TO = 10000;
-SETTINGS_NUMBER_STEP = 1;
+var SETTINGS_TEMPLATE = DEFAULT_TEMPLATE;
+var SETTINGS_PAD_SIZE = DEFAULT_PAD_SIZE;
+
+var SETTINGS_NUMBER_FROM = DEFAULT_NUMBER_FROM;
+var SETTINGS_NUMBER_TO = DEFAULT_NUMBER_TO;
+var SETTINGS_NUMBER_STEP = DEFAULT_NUMBER_STEP;
 
 function onRun(context) {
 
     var showMessage = context.document.showMessage;
 
-    showMessage("Start Numbering Machine");
+    //showMessage("Start Numbering Machine");
 
     // check selected dashboard
 
@@ -21,6 +22,22 @@ function onRun(context) {
         context.document.showMessage("Please select any artboards to proceed");
         return
     }
+
+    // get settings
+
+    var dialogResult = createDialog();
+
+    if (dialogResult[0] != 1000) {
+        return
+    }
+
+    // TODO: verify user input
+
+    SETTINGS_TEMPLATE = dialogResult[1];
+    SETTINGS_PAD_SIZE = dialogResult[2];
+    SETTINGS_NUMBER_FROM = dialogResult[3];
+    SETTINGS_NUMBER_TO = dialogResult[4];
+    SETTINGS_NUMBER_STEP = dialogResult[5];
 
     // get selected artboards
 
@@ -36,7 +53,7 @@ function onRun(context) {
         }
     }
 
-    showMessage("Selected " + selectedArtboards.count() + " artboards");
+    //showMessage("Selected " + selectedArtboards.count() + " artboards");
 
     // create temporary page
 
@@ -48,13 +65,13 @@ function onRun(context) {
 
     var currentNumber = SETTINGS_NUMBER_FROM;
     while(currentNumber <= SETTINGS_NUMBER_TO) {
-        showMessage("Generate page #" + currentNumber);
+        //showMessage("Generate page #" + currentNumber);
         var replacedArtboards = replaceArtboards(selectedArtboards, currentNumber);
         appendArtboards(tempPage, replacedArtboards);
         currentNumber += SETTINGS_NUMBER_STEP;
     }
 
-    showMessage("Export");
+    //showMessage("Export");
 
     pageToPDF(tempPage);
     doc.documentData().removePage(tempPage);
@@ -112,7 +129,7 @@ function generateNextNumber(number) {
         next_number = new Array(SETTINGS_PAD_SIZE - next_number.length + 1).join(SETTINGS_PAD_STRING) + next_number;
     }
 
-    return SETTINGS_TEMPLATE.replace('[*]', next_number);
+    return SETTINGS_TEMPLATE.replace(SETTINGS_PLACEHOLDER, next_number);
 }
 
 function pageToPDF(page) {
