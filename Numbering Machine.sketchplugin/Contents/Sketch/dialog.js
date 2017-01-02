@@ -12,7 +12,7 @@ function createDialog() {
     var template = createInput(
         view,
         "Template\n [*] - placeholder",
-        DEFAULT_TEMPLATE,
+        SETTINGS_TEMPLATE,
         NSMakeRect(0, 120, 150, 40),
         NSMakeRect(160, 130, 200, 25)
     );
@@ -20,7 +20,7 @@ function createDialog() {
     var pad_size = createInput(
         view,
         "Pad size",
-        DEFAULT_PAD_SIZE,
+        SETTINGS_PAD_SIZE,
         NSMakeRect(0, 97, 150, 25),
         NSMakeRect(160, 100, 200, 25)
     );
@@ -28,7 +28,7 @@ function createDialog() {
     var number_from = createInput(
         view,
         "Number from",
-        DEFAULT_NUMBER_FROM,
+        SETTINGS_NUMBER_FROM,
         NSMakeRect(0, 67, 150, 25),
         NSMakeRect(160, 70, 200, 25)
     );
@@ -36,7 +36,7 @@ function createDialog() {
     var number_to = createInput(
         view,
         "Number to",
-        DEFAULT_NUMBER_TO,
+        SETTINGS_NUMBER_TO,
         NSMakeRect(0, 37, 150, 25),
         NSMakeRect(160, 40, 200, 25)
     );
@@ -44,7 +44,7 @@ function createDialog() {
     var number_step = createInput(
         view,
         "Step",
-        DEFAULT_NUMBER_STEP,
+        SETTINGS_NUMBER_STEP,
         NSMakeRect(0, 7, 150, 25),
         NSMakeRect(160, 10, 200, 25)
     );
@@ -59,7 +59,7 @@ function createDialog() {
         pad_size.integerValue(),
         number_from.integerValue(),
         number_to.integerValue(),
-        number_step.integerValue(),
+        number_step.integerValue()
     ];
 }
 
@@ -80,8 +80,7 @@ function createInput(view, label, val, label_rect, rect) {
     var field = NSTextField.alloc().initWithFrame(rect);
     field.stringValue = val;
 
-    var label = createLabel(label, label_rect);
-    view.addSubview(label);
+    view.addSubview(createLabel(label, label_rect));
     view.addSubview(field);
 
     return field;

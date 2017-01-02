@@ -1,13 +1,6 @@
 @import 'dialog.js'
 @import 'config.js'
 
-var SETTINGS_TEMPLATE = DEFAULT_TEMPLATE;
-var SETTINGS_PAD_SIZE = DEFAULT_PAD_SIZE;
-
-var SETTINGS_NUMBER_FROM = DEFAULT_NUMBER_FROM;
-var SETTINGS_NUMBER_TO = DEFAULT_NUMBER_TO;
-var SETTINGS_NUMBER_STEP = DEFAULT_NUMBER_STEP;
-
 function onRun(context) {
 
     var showMessage = context.document.showMessage;
@@ -19,6 +12,9 @@ function onRun(context) {
     var selection = context.selection;
 
     if (selection.count() <= 0) {
+
+        // TODO: showMessage is not so visible, better to show popup
+
         context.document.showMessage("Please select any artboards to proceed");
         return
     }
