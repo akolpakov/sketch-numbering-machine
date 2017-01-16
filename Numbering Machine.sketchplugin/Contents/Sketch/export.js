@@ -12,11 +12,8 @@ function onRun(context) {
     var selection = context.selection;
 
     if (selection.count() <= 0) {
-
-        // TODO: showMessage is not so visible, better to show popup
-
-        context.document.showMessage("Please select any artboards to proceed");
-        return
+        createErrorBox("Please select artboards to proceed");
+        return;
     }
 
     // get settings
@@ -24,7 +21,7 @@ function onRun(context) {
     var dialogResult = createDialog();
 
     if (dialogResult[0] != 1000) {
-        return
+        return;
     }
 
     // TODO: verify user input
@@ -40,12 +37,13 @@ function onRun(context) {
     var selectionLoop = selection.objectEnumerator();
     var selectedArtboards = NSMutableArray.array();
 
+    var layer;
     while (layer = selectionLoop.nextObject()) {
         if (layer.isMemberOfClass(MSArtboardGroup)) {
             selectedArtboards.addObject(layer);
         } else {
-            showMessage("Only artboards allowed to proceed PDF export");
-            return
+            createErrorBox("Only artboards allowed to proceed PDF export");
+            return;
         }
     }
 
@@ -57,19 +55,25 @@ function onRun(context) {
     tempPage.setName("Numbering Machine");
     context.document.documentData().addPage(tempPage);
 
-    // replace text
+    try {
 
-    var currentNumber = SETTINGS_NUMBER_FROM;
-    while(currentNumber <= SETTINGS_NUMBER_TO) {
-        //showMessage("Generate page #" + currentNumber);
-        var replacedArtboards = replaceArtboards(selectedArtboards, currentNumber);
-        appendArtboards(tempPage, replacedArtboards);
-        currentNumber += SETTINGS_NUMBER_STEP;
+        // replace text
+
+        var currentNumber = SETTINGS_NUMBER_FROM;
+        while (currentNumber <= SETTINGS_NUMBER_TO) {
+            //showMessage("Generate page #" + currentNumber);
+            appendArtboards(tempPage, replaceArtboards(selectedArtboards, currentNumber));
+            currentNumber += SETTINGS_NUMBER_STEP;
+        }
+
+        //showMessage("Export");
+
+        pageToPDF(tempPage);
+
+    } catch(e) {
+        createErrorBox(e);
     }
 
-    //showMessage("Export");
-
-    pageToPDF(tempPage);
     doc.documentData().removePage(tempPage);
 
     showMessage("Done");
@@ -78,19 +82,26 @@ function onRun(context) {
 function replaceArtboards(selectedArtboards, currentNumber) {
     var replacedArtboards = NSMutableArray.array();
 
+    var replacementFound = false;
+
     for(var i = 0; i < selectedArtboards.count(); i++) {
         var artboard = selectedArtboards[i].copy();
 
-        var childrenLoop = artboard.children().objectEnumerator();
+        var child, childrenLoop = artboard.children().objectEnumerator();
         while (child = childrenLoop.nextObject()) {
             if (child.isMemberOfClass(MSTextLayer)) {
                 if(child.name() == SETTINGS_NAME_TO_REPLACE) {
                     child.setStringValue(generateNextNumber(currentNumber));
+                    replacementFound = true;
                 }
             }
         }
 
         replacedArtboards.addObject(artboard);
+    }
+
+    if(!replacementFound) {
+        throw "Layer with name \"" + SETTINGS_NAME_TO_REPLACE + "\" should be presented on the artboards. Please read the manual.";
     }
 
     return replacedArtboards;

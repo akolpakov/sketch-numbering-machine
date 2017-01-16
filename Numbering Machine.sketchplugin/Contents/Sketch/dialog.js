@@ -85,3 +85,10 @@ function createInput(view, label, val, label_rect, rect) {
 
     return field;
 }
+
+function createErrorBox(text) {
+    var alert = NSAlert.alloc().init();
+    alert.setMessageText(text);
+    alert.addButtonWithTitle('Ok');
+    return alert.runModal();
+}
