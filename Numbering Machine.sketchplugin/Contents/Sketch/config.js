@@ -1,6 +1,6 @@
 var SETTINGS_HELP_URL = 'https://github.com/akolpakov/sketch-numbering-machine';
 
-var SETTINGS_NAME_TO_REPLACE = 'replace';
+var SETTINGS_NAME_TO_REPLACE = 'NM';
 var SETTINGS_PLACEHOLDER = '[*]';
 
 // Defaults

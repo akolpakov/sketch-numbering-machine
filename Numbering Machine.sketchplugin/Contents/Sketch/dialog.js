@@ -126,19 +126,50 @@ function createDialog() {
 
     if(responseCode == 1002) {
         var url = NSURL.URLWithString(SETTINGS_HELP_URL);
-        NSWorkspace.sharedWorkspace().openURL(url)
+        NSWorkspace.sharedWorkspace().openURL(url);
+        return false;
+    }
+
+    if(responseCode != 1000) {
+        return false;
+    }
+
+    // verify user input
+
+    SETTINGS_TEMPLATE = template.stringValue();
+    SETTINGS_PAD_SIZE = pad_size.integerValue();
+    SETTINGS_NUMBER_AMOUNT = number_amount.integerValue();
+    SETTINGS_NUMBER_STEP = number_step.integerValue();
+    SETTINGS_NUMBER_FROM = number_from.integerValue();
+
+    if(!SETTINGS_TEMPLATE.includes(SETTINGS_PLACEHOLDER)) {
+        createErrorBox("Template has to contain placeholder \"" + SETTINGS_PLACEHOLDER + "\"");
+        return false;
+    }
+
+    if(SETTINGS_PAD_SIZE < 0) {
+        createErrorBox("Padding size should be more or equal 0");
+        return false;
+    }
+
+    if(SETTINGS_NUMBER_AMOUNT <= 0) {
+        createErrorBox("Amount should be greater than 0");
+        return false;
+    }
+
+    if(SETTINGS_NUMBER_STEP <= 0) {
+        createErrorBox("Step should be greater than 0");
+        return false;
+    }
+
+    if(SETTINGS_NUMBER_FROM <= 0) {
+        createErrorBox("\"Number from\" should be greater than 0");
+        return false;
     }
 
     // return
 
-    return [
-        responseCode,
-        template.stringValue(),
-        pad_size.integerValue(),
-        number_amount.integerValue(),
-        number_step.integerValue(),
-        number_from.integerValue()
-    ];
+    return true;
 }
 
 function createErrorBox(text) {

@@ -20,17 +20,10 @@ function onRun(context) {
 
     var dialogResult = createDialog();
 
-    if (dialogResult[0] != 1000) {
+    if (!dialogResult) {
+        showMessage("Cancelled");
         return;
     }
-
-    // TODO: verify user input
-
-    SETTINGS_TEMPLATE = dialogResult[1];
-    SETTINGS_PAD_SIZE = dialogResult[2];
-    SETTINGS_NUMBER_AMOUNT = dialogResult[3];
-    SETTINGS_NUMBER_STEP = dialogResult[4];
-    SETTINGS_NUMBER_FROM = dialogResult[5];
 
     // get selected artboards
 
