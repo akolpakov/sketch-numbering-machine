@@ -28,9 +28,9 @@ function onRun(context) {
 
     SETTINGS_TEMPLATE = dialogResult[1];
     SETTINGS_PAD_SIZE = dialogResult[2];
-    SETTINGS_NUMBER_FROM = dialogResult[3];
-    SETTINGS_NUMBER_TO = dialogResult[4];
-    SETTINGS_NUMBER_STEP = dialogResult[5];
+    SETTINGS_NUMBER_AMOUNT = dialogResult[3];
+    SETTINGS_NUMBER_STEP = dialogResult[4];
+    SETTINGS_NUMBER_FROM = dialogResult[5];
 
     // get selected artboards
 
@@ -60,7 +60,7 @@ function onRun(context) {
         // replace text
 
         var currentNumber = SETTINGS_NUMBER_FROM;
-        while (currentNumber <= SETTINGS_NUMBER_TO) {
+        for(var i = 0; i < SETTINGS_NUMBER_AMOUNT; i++) {
             //showMessage("Generate page #" + currentNumber);
             appendArtboards(tempPage, replaceArtboards(selectedArtboards, currentNumber));
             currentNumber += SETTINGS_NUMBER_STEP;
