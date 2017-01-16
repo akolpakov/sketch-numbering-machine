@@ -68,7 +68,9 @@ function onRun(context) {
 
         //showMessage("Export");
 
-        pageToPDF(tempPage);
+        var exportName = 'Numbering machine [' + generateNextNumber(SETTINGS_NUMBER_FROM) + ' - ' + generateNextNumber(currentNumber) + ']';
+
+        pageToPDF(tempPage, exportName);
 
     } catch(e) {
         createErrorBox(e);
@@ -139,7 +141,7 @@ function generateNextNumber(number) {
     return SETTINGS_TEMPLATE.replace(SETTINGS_PLACEHOLDER, next_number);
 }
 
-function pageToPDF(page) {
+function pageToPDF(page, exportName) {
     var pageArray = [page];
-    MSPDFBookExporter.exportPages_defaultFilename(pageArray, page.name() + ".pdf");
+    MSPDFBookExporter.exportPages_defaultFilename(pageArray, exportName + ".pdf");
 }
