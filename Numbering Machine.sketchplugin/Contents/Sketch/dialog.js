@@ -1,39 +1,6 @@
 @import 'config.js'
 
-function createDialog() {
-
-    var dialogHeight = 400;
-    var dialogWidth = 400;
-
-    function textField(rect) {
-        rect.origin.y = dialogHeight - rect.origin.y - rect.size.height;
-        return NSTextField.alloc().initWithFrame(rect);
-    }
-
-    function createLabel(view, text, rect) {
-        var label = textField(rect);
-        label.stringValue = text;
-        label.editable = false;
-        label.borderd = false;
-        label.bezeled = false;
-        //label.setAlignment(1);
-        label.useSingleLineMode = true;
-        label.drawsBackground = false;
-
-        view.addSubview(label);
-
-        return label;
-    }
-
-    function createInput(view, label, val, label_rect, rect) {
-        createLabel(view, label, label_rect);
-
-        var field = textField(rect);
-        field.stringValue = val;
-        view.addSubview(field);
-
-        return field;
-    }
+function createDialog(advanced) {
 
     var alert = NSAlert.alloc().init();
     alert.setMessageText('To generate PDF, please select params');
@@ -41,12 +8,160 @@ function createDialog() {
     alert.addButtonWithTitle('Cancel');
     alert.addButtonWithTitle('Help');
 
+    if(advanced) {
+        var view = createAdvancedView(alert);
+    } else {
+        var view = createBasicView(alert);
+    }
+
+    alert.setAccessoryView(view);
+
+    var responseCode = alert.runModal();
+
+    // Check pressed button
+
+    if(responseCode == 1002) {
+        var url = NSURL.URLWithString(SETTINGS_HELP_URL);
+        NSWorkspace.sharedWorkspace().openURL(url);
+        return createDialog(advanced);
+    } else if(responseCode == 1003) {
+        return createDialog(!advanced);
+    } else if(responseCode != 1000) {
+        return false;
+    }
+
+    // verify func
+
+    function verifyInteger(field, name) {
+        if(field.integerValue() != field.stringValue()) {
+            createErrorBox("\"" + name + "\" should be an integer");
+            return false;
+        }
+        return true;
+    }
+
+    function verifyGreaterThan0(field, name) {
+        if(field.integerValue() <= 0) {
+            createErrorBox("\"" + name + "\" should be greater than 0");
+            return false;
+        }
+        return true;
+    }
+
+    // verify start from
+
+    SETTINGS_NUMBER_FROM = view.nm.NUMBER_FROM.integerValue();
+
+    if(!verifyInteger(view.nm.NUMBER_FROM, "Number from") || !verifyGreaterThan0(view.nm.NUMBER_FROM, "Number from")) {
+        return false;
+    }
+
+    // verify amount
+
+    SETTINGS_NUMBER_AMOUNT = view.nm.NUMBER_AMOUNT.integerValue();
+
+    if(!verifyInteger(view.nm.NUMBER_AMOUNT, "Amount") || !verifyGreaterThan0(view.nm.NUMBER_AMOUNT, "Amount")) {
+        return false;
+    }
+
+    // verify template
+
+    if(view.nm.TEMPLATE) {
+        SETTINGS_TEMPLATE = view.nm.TEMPLATE.stringValue();
+        if(!SETTINGS_TEMPLATE.includes(SETTINGS_PLACEHOLDER)) {
+            createErrorBox("Template has to contain placeholder \"" + SETTINGS_PLACEHOLDER + "\"");
+            return false;
+        }
+    } else {
+        SETTINGS_TEMPLATE = SETTINGS_PLACEHOLDER;
+    }
+
+    // verify pad size
+
+    if(view.nm.PAD_SIZE) {
+        SETTINGS_PAD_SIZE = view.nm.PAD_SIZE.integerValue();
+
+        if(!verifyInteger(view.nm.PAD_SIZE, "Pad size") || !verifyGreaterThan0(view.nm.PAD_SIZE, "Pad size")) {
+            return false;
+        }
+    } else {
+        SETTINGS_PAD_SIZE = 0;
+    }
+
+    // verify step
+
+    if(view.nm.NUMBER_STEP) {
+        SETTINGS_NUMBER_STEP = view.nm.NUMBER_STEP.integerValue();
+
+        if(!verifyInteger(view.nm.NUMBER_STEP, "Step") || !verifyGreaterThan0(view.nm.NUMBER_STEP, "Step")) {
+            return false;
+        }
+    }
+
+    // return
+
+    return true;
+}
+
+function createBasicView(alert) {
+    alert.addButtonWithTitle('Advanced');
+
+    var dialogHeight = 200;
+    var dialogWidth = 400;
+
+    function R(x, y, w, h) {
+        return NSMakeRect(x, dialogHeight - y - h, w, h);
+    }
+
     var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, dialogWidth, dialogHeight));
 
     createLabel(
         view,
-        "On the selected artboards, text layers with name \"" + SETTINGS_NAME_TO_REPLACE + "\" will be replaced with number in format which you define in \"Template\" field\nSee \"Help\" for more information",
-        NSMakeRect(0, 0, dialogWidth, 70)
+        "On the selected artboards, text layers with name \"" + SETTINGS_NAME_TO_REPLACE + "\" will be replaced with generated number.\nSee \"Help\" for more information",
+        R(0, 0, dialogWidth, 70)
+    );
+
+    var labelWidth = 120;
+    var inputX = labelWidth + 10;
+    var lineY = 70;
+
+    view.nm = {};
+    view.nm.NUMBER_FROM = createInput(
+        view,
+        "Number from",
+        SETTINGS_NUMBER_FROM,
+        R(0, lineY+3, labelWidth, 25),
+        R(inputX, lineY, 200, 25)
+    );
+    lineY += 30;
+
+    view.nm.NUMBER_AMOUNT = createInput(
+        view,
+        "Amount",
+        SETTINGS_NUMBER_AMOUNT,
+        R(0, lineY+3, labelWidth, 25),
+        R(inputX, lineY, 200, 25)
+    );
+
+    return view;
+}
+
+function createAdvancedView(alert) {
+    alert.addButtonWithTitle('Basic');
+
+    var dialogHeight = 400;
+    var dialogWidth = 400;
+
+    function R(x, y, w, h) {
+        return NSMakeRect(x, dialogHeight - y - h, w, h);
+    }
+
+    var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, dialogWidth, dialogHeight));
+
+    createLabel(
+        view,
+        "On the selected artboards, text layers with name \"" + SETTINGS_NAME_TO_REPLACE + "\" will be replaced with number in format which you define in \"Template\" field.\nSee \"Help\" for more information",
+        R(0, 0, dialogWidth, 70)
     );
 
     var labelWidth = 120;
@@ -56,120 +171,95 @@ function createDialog() {
     createLabel(
         view,
         "- - - - - - - - - - -       Number format       - - - - - - - - - - -",
-        NSMakeRect(0, lineY, dialogWidth, 25)
+        R(0, lineY, dialogWidth, 25)
     );
     lineY += 30;
 
-    var template = createInput(
+    view.nm = {};
+    view.nm.TEMPLATE = createInput(
         view,
         "Template",
         SETTINGS_TEMPLATE,
-        NSMakeRect(0, lineY+3, labelWidth, 25),
-        NSMakeRect(inputX, lineY, 200, 25)
+        R(0, lineY+3, labelWidth, 25),
+        R(inputX, lineY, 200, 25)
     );
     lineY += 30;
 
-    var pad_size = createInput(
+    view.nm.PAD_SIZE = createInput(
         view,
         "Pad size",
         SETTINGS_PAD_SIZE,
-        NSMakeRect(0, lineY+3, labelWidth, 25),
-        NSMakeRect(inputX, lineY, 200, 25)
+        R(0, lineY+3, labelWidth, 25),
+        R(inputX, lineY, 200, 25)
     );
     lineY += 50;
 
     createLabel(
         view,
         "- - - - - - - - - -    Counter configuration    - - - - - - - - - -",
-        NSMakeRect(0, lineY, dialogWidth, 25)
+        R(0, lineY, dialogWidth, 25)
     );
     lineY += 30;
 
-    var number_amount = createInput(
+    view.nm.NUMBER_AMOUNT = createInput(
         view,
         "Amount",
         SETTINGS_NUMBER_AMOUNT,
-        NSMakeRect(0, lineY+3, labelWidth, 25),
-        NSMakeRect(inputX, lineY, 200, 25)
+        R(0, lineY+3, labelWidth, 25),
+        R(inputX, lineY, 200, 25)
     );
     lineY += 30;
 
-    var number_step = createInput(
+    view.nm.NUMBER_STEP = createInput(
         view,
         "Step",
         SETTINGS_NUMBER_STEP,
-        NSMakeRect(0, lineY+3, labelWidth, 25),
-        NSMakeRect(inputX, lineY, 200, 25)
+        R(0, lineY+3, labelWidth, 25),
+        R(inputX, lineY, 200, 25)
     );
     lineY += 50;
 
     createLabel(
         view,
         "- - - - - - - - - - -    Initial configuration    - - - - - - - - - - -",
-        NSMakeRect(0, lineY, dialogWidth, 25)
+        R(0, lineY, dialogWidth, 25)
     );
     lineY += 30;
 
-    var number_from = createInput(
+    view.nm.NUMBER_FROM = createInput(
         view,
         "Number from",
         SETTINGS_NUMBER_FROM,
-        NSMakeRect(0, lineY+3, labelWidth, 25),
-        NSMakeRect(inputX, lineY, 200, 25)
+        R(0, lineY+3, labelWidth, 25),
+        R(inputX, lineY, 200, 25)
     );
 
-    alert.setAccessoryView(view);
+    return view;
+}
 
-    var responseCode = alert.runModal();
+function createLabel(view, text, rect) {
+    var label = NSTextField.alloc().initWithFrame(rect);
+    label.stringValue = text;
+    label.editable = false;
+    label.borderd = false;
+    label.bezeled = false;
+    //label.setAlignment(1);
+    label.useSingleLineMode = true;
+    label.drawsBackground = false;
 
-    // if help button is pressed
+    view.addSubview(label);
 
-    if(responseCode == 1002) {
-        var url = NSURL.URLWithString(SETTINGS_HELP_URL);
-        NSWorkspace.sharedWorkspace().openURL(url);
-        return false;
-    }
+    return label;
+}
 
-    if(responseCode != 1000) {
-        return false;
-    }
+function createInput(view, label, val, label_rect, rect) {
+    createLabel(view, label, label_rect);
 
-    // verify user input
+    var field = NSTextField.alloc().initWithFrame(rect);
+    field.stringValue = val;
+    view.addSubview(field);
 
-    SETTINGS_TEMPLATE = template.stringValue();
-    SETTINGS_PAD_SIZE = pad_size.integerValue();
-    SETTINGS_NUMBER_AMOUNT = number_amount.integerValue();
-    SETTINGS_NUMBER_STEP = number_step.integerValue();
-    SETTINGS_NUMBER_FROM = number_from.integerValue();
-
-    if(!SETTINGS_TEMPLATE.includes(SETTINGS_PLACEHOLDER)) {
-        createErrorBox("Template has to contain placeholder \"" + SETTINGS_PLACEHOLDER + "\"");
-        return false;
-    }
-
-    if(SETTINGS_PAD_SIZE < 0) {
-        createErrorBox("Padding size should be more or equal 0");
-        return false;
-    }
-
-    if(SETTINGS_NUMBER_AMOUNT <= 0) {
-        createErrorBox("Amount should be greater than 0");
-        return false;
-    }
-
-    if(SETTINGS_NUMBER_STEP <= 0) {
-        createErrorBox("Step should be greater than 0");
-        return false;
-    }
-
-    if(SETTINGS_NUMBER_FROM <= 0) {
-        createErrorBox("\"Number from\" should be greater than 0");
-        return false;
-    }
-
-    // return
-
-    return true;
+    return field;
 }
 
 function createErrorBox(text) {
