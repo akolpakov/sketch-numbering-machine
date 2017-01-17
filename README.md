@@ -2,9 +2,8 @@
 [Sketch](https://www.sketchapp.com/) plugin to generate PDF document based on selected artboards with generated numbers, like Numbering Machine does.
 
 # How to install
-1. [Download the latest release](https://github.com/akolpakov/sketch-numbering-machine/releases/latest) and open it
-2. Navigate the Sketch menu bar to Plugins ▸ Reveal Plugins Folder
-3. Place AlignTo directory into the revealed plugins directory
+1. [Download the latest release](https://github.com/akolpakov/sketch-numbering-machine/archive/master.zip) and open it
+2. Duble click on `Numbering Machine.sketchplugin` to install the plugin
 
 # How to use
 
