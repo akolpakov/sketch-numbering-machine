@@ -12,10 +12,8 @@
 
 > You can see it in more detail on [Vimeo](https://vimeo.com/199833210).
 
-1. Create text layer with any content with name `NM`, this layer will be replaced with generated number
-*Five different IDs could be placed on one artboard*
-3. Select artboards wich you are going to export
-*You can select several artboards*
+1. Create text layer with any content with name `NM`, this layer will be replaced with generated number. *(Five different IDs could be placed on one artboard)*
+3. Select artboards wich you are going to export. *(You can select several artboards)*
 4. Run plugin (`Plugins -> Numbering machine -> Export selected artboards`)
 5. Configure numbering machine (see below)
 6. Generate and save PDF file
