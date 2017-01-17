@@ -53,6 +53,7 @@ function onRun(context) {
         // replace text
 
         var currentNumber = SETTINGS_NUMBER_FROM;
+
         for(var i = 0; i < SETTINGS_NUMBER_AMOUNT; i++) {
             //showMessage("Generate page #" + currentNumber);
             appendArtboards(tempPage, replaceArtboards(selectedArtboards, currentNumber));
@@ -69,7 +70,7 @@ function onRun(context) {
         createErrorBox(e);
     }
 
-    doc.documentData().removePage(tempPage);
+    context.document.documentData().removePage(tempPage);
 
     showMessage("Done");
 }
@@ -85,9 +86,17 @@ function replaceArtboards(selectedArtboards, currentNumber) {
         var child, childrenLoop = artboard.children().objectEnumerator();
         while (child = childrenLoop.nextObject()) {
             if (child.isMemberOfClass(MSTextLayer)) {
-                if(child.name() == SETTINGS_NAME_TO_REPLACE) {
+                if(child.name() == SETTINGS_NAME_TO_REPLACE || child.name() == SETTINGS_NAME_TO_REPLACE + '-1') {
                     child.setStringValue(generateNextNumber(currentNumber));
                     replacementFound = true;
+                }
+                for(var j = 1; j < SETTINGS_NUMBER_FROM_EXTRA_COUNT; j++) {
+                    if(SETTINGS_NUMBER_FROM_EXTRA[j]) {
+                        if (child.name() == SETTINGS_NAME_TO_REPLACE + '-' + (j+1)) {
+                            child.setStringValue(generateNextNumber(currentNumber + SETTINGS_NUMBER_FROM_EXTRA[j] - SETTINGS_NUMBER_FROM));
+                            replacementFound = true;
+                        }
+                    }
                 }
             }
         }

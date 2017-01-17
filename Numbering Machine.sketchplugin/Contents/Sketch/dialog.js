@@ -98,6 +98,24 @@ function createDialog(advanced) {
         }
     }
 
+    // verify number from extra
+
+    if(view.nm.NUMBER_FROM_EXTRA) {
+        SETTINGS_NUMBER_FROM_EXTRA = [];
+        for(var i = 1; i < SETTINGS_NUMBER_FROM_EXTRA_COUNT; i++) {
+            SETTINGS_NUMBER_FROM_EXTRA.push(view.nm.NUMBER_FROM_EXTRA[i].integerValue());
+
+            if(
+                view.nm.NUMBER_FROM_EXTRA[i].stringValue() != '' && (
+                    !verifyInteger(view.nm.NUMBER_FROM_EXTRA[i], "From number") ||
+                    !verifyGreaterThan0(view.nm.NUMBER_FROM_EXTRA[i], "From number")
+                )
+            ) {
+                return false;
+            }
+        }
+    }
+
     // return
 
     return true;
@@ -149,7 +167,7 @@ function createBasicView(alert) {
 function createAdvancedView(alert) {
     alert.addButtonWithTitle('Basic');
 
-    var dialogHeight = 400;
+    var dialogHeight = 500;
     var dialogWidth = 400;
 
     function R(x, y, w, h) {
@@ -219,20 +237,33 @@ function createAdvancedView(alert) {
     );
     lineY += 50;
 
-    createLabel(
+        createLabel(
         view,
-        "- - - - - - - - - - -    Initial configuration    - - - - - - - - - - -",
+        "- - - - - - - - - - - -      Number from      - - - - - - - - - - - -",
         R(0, lineY, dialogWidth, 25)
     );
     lineY += 30;
 
     view.nm.NUMBER_FROM = createInput(
         view,
-        "Number from",
+        SETTINGS_NAME_TO_REPLACE + "-1" + " or just " + SETTINGS_NAME_TO_REPLACE,
         SETTINGS_NUMBER_FROM,
         R(0, lineY+3, labelWidth, 25),
         R(inputX, lineY, 200, 25)
     );
+    lineY += 30;
+
+    view.nm.NUMBER_FROM_EXTRA = [];
+    for(var i = 1; i < SETTINGS_NUMBER_FROM_EXTRA_COUNT; i++) {
+        view.nm.NUMBER_FROM_EXTRA[i] = createInput(
+            view,
+            SETTINGS_NAME_TO_REPLACE + "-" + (i+1),
+            '',
+            R(0, lineY+3, labelWidth, 25),
+            R(inputX, lineY, 200, 25)
+        );
+        lineY += 30;
+    }
 
     return view;
 }
