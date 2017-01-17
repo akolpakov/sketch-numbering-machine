@@ -103,7 +103,7 @@ function createDialog(advanced) {
     if(view.nm.NUMBER_FROM_EXTRA) {
         SETTINGS_NUMBER_FROM_EXTRA = [];
         for(var i = 1; i < SETTINGS_NUMBER_FROM_EXTRA_COUNT; i++) {
-            SETTINGS_NUMBER_FROM_EXTRA.push(view.nm.NUMBER_FROM_EXTRA[i].integerValue());
+            SETTINGS_NUMBER_FROM_EXTRA[i] = view.nm.NUMBER_FROM_EXTRA[i].integerValue();
 
             if(
                 view.nm.NUMBER_FROM_EXTRA[i].stringValue() != '' && (

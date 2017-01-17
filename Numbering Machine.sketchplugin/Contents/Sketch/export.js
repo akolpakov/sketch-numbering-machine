@@ -62,7 +62,7 @@ function onRun(context) {
 
         //showMessage("Export");
 
-        var exportName = 'Numbering machine [' + generateNextNumber(SETTINGS_NUMBER_FROM) + ' - ' + generateNextNumber(currentNumber) + ']';
+        var exportName = 'Numbering machine [' + generateNextNumber(SETTINGS_NUMBER_FROM) + ' - ' + generateNextNumber(currentNumber - SETTINGS_NUMBER_STEP) + ']';
 
         pageToPDF(tempPage, exportName);
 
