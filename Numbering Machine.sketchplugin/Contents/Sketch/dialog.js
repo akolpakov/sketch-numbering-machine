@@ -255,10 +255,11 @@ function createAdvancedView(alert) {
 
     view.nm.NUMBER_FROM_EXTRA = [];
     for(var i = 1; i < SETTINGS_NUMBER_FROM_EXTRA_COUNT; i++) {
+        var val = SETTINGS_NUMBER_FROM_EXTRA[i] || '';
         view.nm.NUMBER_FROM_EXTRA[i] = createInput(
             view,
             SETTINGS_NAME_TO_REPLACE + "-" + (i+1),
-            '',
+            val,
             R(0, lineY+3, labelWidth, 25),
             R(inputX, lineY, 200, 25)
         );

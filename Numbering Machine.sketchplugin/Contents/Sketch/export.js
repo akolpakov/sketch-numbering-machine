@@ -18,7 +18,7 @@ function onRun(context) {
 
     // get settings
 
-    var dialogResult = createDialog();
+    var dialogResult = createDialog(SETTINGS_DIALOG_OPEN_IN_ADVANCE);
 
     if (!dialogResult) {
         showMessage("Cancelled");
