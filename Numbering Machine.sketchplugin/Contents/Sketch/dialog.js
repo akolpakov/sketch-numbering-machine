@@ -33,7 +33,7 @@ function createDialog(advanced) {
     // verify func
 
     function verifyInteger(field, name) {
-        if(field.integerValue() != field.stringValue()) {
+        if(field.integerValue() != field.stringValue().replace(/[^0-9]/g, '')) {
             createErrorBox("\"" + name + "\" should be an integer");
             return false;
         }
