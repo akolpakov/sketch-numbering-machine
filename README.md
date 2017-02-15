@@ -27,7 +27,10 @@
 
 `Template` - Template for number. Placeholder `[*]` have to be part of tempate. Placeholder `[*]` will be replaced with generated number
 
-`Pad size` - How many leading zerows will be in generated number
+`Pad size` - How many leading zeros will be in generated number
+
+`Check digit` - Apply [check digit algorithm](https://en.wikipedia.org/wiki/Check_digit) to generated number. Supported algorithms:
+- [**Damm Algorithm**](https://en.wikipedia.org/wiki/Damm_algorithm)
 
 `Amount` - Amount of pages generated
 
