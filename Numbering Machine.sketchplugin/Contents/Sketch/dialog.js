@@ -92,7 +92,9 @@ function createDialog(advanced) {
 
     // Algorithm
 
-    SETTINGS_ALGORITHM = ALGORITHMS[view.nm.ALGORITHM.indexOfSelectedItem()];
+    if(view.nm.ALGORITHM) {
+        SETTINGS_ALGORITHM = ALGORITHMS[view.nm.ALGORITHM.indexOfSelectedItem()];
+    }
 
     // verify step
 
