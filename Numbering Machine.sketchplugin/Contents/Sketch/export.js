@@ -1,5 +1,6 @@
 @import 'dialog.js'
 @import 'config.js'
+@import 'numbers/damm.js'
 
 function onRun(context) {
 
@@ -75,6 +76,9 @@ function onRun(context) {
     showMessage("Done");
 }
 
+
+// Replace placeholders in artboard
+
 function replaceArtboards(selectedArtboards, currentNumber) {
     var replacedArtboards = NSMutableArray.array();
 
@@ -111,6 +115,9 @@ function replaceArtboards(selectedArtboards, currentNumber) {
     return replacedArtboards;
 }
 
+
+// Append artboards
+
 function appendArtboards(page, artboards) {
 
     var page_artboards = page.artboards();
@@ -134,14 +141,32 @@ function appendArtboards(page, artboards) {
     page.addLayers(artboards);
 }
 
+
+// Generate Next number
+
 function generateNextNumber(number) {
+
     var next_number = number.toString();
+
+    // check digit algorithm
+
+    if(SETTINGS_ALGORITHM == ALGHORITHM_DAMM) {
+        next_number = calculate_damm(next_number);
+    }
+
+    // padding
+
     if(next_number.length < SETTINGS_PAD_SIZE) {
         next_number = new Array(SETTINGS_PAD_SIZE - next_number.length + 1).join(SETTINGS_PAD_STRING) + next_number;
     }
 
+    // return
+
     return SETTINGS_TEMPLATE.replace(SETTINGS_PLACEHOLDER, next_number);
 }
+
+
+// Export to PDF
 
 function pageToPDF(page, exportName) {
     var pageArray = [page];

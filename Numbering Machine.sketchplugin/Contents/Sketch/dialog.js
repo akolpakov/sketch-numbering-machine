@@ -8,10 +8,12 @@ function createDialog(advanced) {
     alert.addButtonWithTitle('Cancel');
     alert.addButtonWithTitle('Help');
 
+    var view;
+
     if(advanced) {
-        var view = createAdvancedView(alert);
+        view = createAdvancedView(alert);
     } else {
-        var view = createBasicView(alert);
+        view = createBasicView(alert);
     }
 
     alert.setAccessoryView(view);
@@ -87,6 +89,10 @@ function createDialog(advanced) {
     } else {
         SETTINGS_PAD_SIZE = 0;
     }
+
+    // Algorithm
+
+    SETTINGS_ALGORITHM = ALGORITHMS[view.nm.ALGORITHM.indexOfSelectedItem()];
 
     // verify step
 
@@ -186,6 +192,8 @@ function createAdvancedView(alert) {
     var inputX = labelWidth + 10;
     var lineY = 70;
 
+    // Number format
+
     createLabel(
         view,
         "- - - - - - - - - - -       Number format       - - - - - - - - - - -",
@@ -210,7 +218,19 @@ function createAdvancedView(alert) {
         R(0, lineY+3, labelWidth, 25),
         R(inputX, lineY, 200, 25)
     );
+    lineY += 30;
+
+    view.nm.ALGORITHM = createCombobox(
+        view,
+        "Check digit",
+        SETTINGS_ALGORITHM || '',
+        R(0, lineY+3, labelWidth, 25),
+        R(inputX, lineY, 200, 25),
+        ALGORITHMS
+    );
     lineY += 50;
+
+    // Counter
 
     createLabel(
         view,
@@ -237,7 +257,9 @@ function createAdvancedView(alert) {
     );
     lineY += 50;
 
-        createLabel(
+    // Number from
+
+    createLabel(
         view,
         "- - - - - - - - - - - -      Number from      - - - - - - - - - - - -",
         R(0, lineY, dialogWidth, 25)
@@ -289,6 +311,16 @@ function createInput(view, label, val, label_rect, rect) {
 
     var field = NSTextField.alloc().initWithFrame(rect);
     field.stringValue = val;
+    view.addSubview(field);
+
+    return field;
+}
+
+function createCombobox(view, label, val, label_rect, rect, options) {
+    createLabel(view, label, label_rect);
+
+    var field = NSPopUpButton.alloc().initWithFrame(rect);
+    field.addItemsWithTitles(options);
     view.addSubview(field);
 
     return field;
