@@ -41,6 +41,8 @@ function onRun(context) {
         }
     }
 
+    detachSymbols(selectedArtboards);
+
     //showMessage("Selected " + selectedArtboards.count() + " artboards");
 
     // create temporary page
@@ -139,6 +141,32 @@ function appendArtboards(page, artboards) {
     }
 
     page.addLayers(artboards);
+}
+
+
+function detachSymbols(artboards) {
+    for(var i = 0; i < artboards.count(); i++) {
+        var artboard = artboards[i];
+
+        var child, childrenLoop = artboard.children().objectEnumerator();
+        while (child = childrenLoop.nextObject()) {
+            if (child.isMemberOfClass(MSSymbolInstance)) {
+                findAndDetachFromSymbol(child)
+            }
+        }
+    }
+}
+
+// Detach symbols
+
+function findAndDetachFromSymbol(layer) {
+    if (layer.isMemberOfClass(MSSymbolInstance)) {
+        layer = layer.detachByReplacingWithGroup();
+        var innerLayer, layerChildrenLoop = layer.children().objectEnumerator();
+        while (innerLayer = layerChildrenLoop.nextObject()) {
+            findAndDetachFromSymbol(innerLayer);
+        }
+    }
 }
 
 
