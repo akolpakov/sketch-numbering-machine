@@ -176,21 +176,26 @@ function generateNextNumber(number) {
 
     var next_number = number.toString();
 
-    // check digit algorithm
-
-    if(SETTINGS_ALGORITHM == ALGHORITHM_DAMM) {
-        next_number = calculate_damm(next_number);
-    }
-
     // padding
 
     if(next_number.length < SETTINGS_PAD_SIZE) {
         next_number = new Array(SETTINGS_PAD_SIZE - next_number.length + 1).join(SETTINGS_PAD_STRING) + next_number;
     }
 
+    // template
+
+    next_number = SETTINGS_TEMPLATE.replace(SETTINGS_PLACEHOLDER, next_number);
+
+    // check digit algorithm
+
+    if(SETTINGS_ALGORITHM == ALGHORITHM_DAMM) {
+        var number_for_checksum = next_number.replace(/[^0-9]/g, '');
+        next_number += calculate_damm_digit(number_for_checksum);
+    }
+
     // return
 
-    return SETTINGS_TEMPLATE.replace(SETTINGS_PLACEHOLDER, next_number);
+    return next_number;
 }
 
 

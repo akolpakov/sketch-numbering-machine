@@ -20,7 +20,3 @@ function calculate_damm_digit(basenumber) {
   }
   return damm;
 }
-
-function calculate_damm(basenumber) {
-    return String(basenumber).concat(calculate_damm_digit(basenumber))
-}
