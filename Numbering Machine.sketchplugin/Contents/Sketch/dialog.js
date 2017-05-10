@@ -50,22 +50,6 @@ function createDialog(advanced) {
         return true;
     }
 
-    // verify start from
-
-    SETTINGS_NUMBER_FROM = view.nm.NUMBER_FROM.integerValue();
-
-    if(!verifyInteger(view.nm.NUMBER_FROM, "Number from") || !verifyGreaterThan0(view.nm.NUMBER_FROM, "Number from")) {
-        return false;
-    }
-
-    // verify amount
-
-    SETTINGS_NUMBER_AMOUNT = view.nm.NUMBER_AMOUNT.integerValue();
-
-    if(!verifyInteger(view.nm.NUMBER_AMOUNT, "Amount") || !verifyGreaterThan0(view.nm.NUMBER_AMOUNT, "Amount")) {
-        return false;
-    }
-
     // verify template
 
     if(view.nm.TEMPLATE) {
@@ -96,6 +80,14 @@ function createDialog(advanced) {
         SETTINGS_ALGORITHM = ALGORITHMS[view.nm.ALGORITHM.indexOfSelectedItem()];
     }
 
+    // verify start from
+
+    SETTINGS_NUMBER_FROM = view.nm.NUMBER_FROM.integerValue();
+
+    if(!verifyInteger(view.nm.NUMBER_FROM, "Number from") || !verifyGreaterThan0(view.nm.NUMBER_FROM, "Number from")) {
+        return false;
+    }
+
     // verify step
 
     if(view.nm.NUMBER_STEP) {
@@ -106,22 +98,18 @@ function createDialog(advanced) {
         }
     }
 
-    // verify number from extra
+    // verify amount
 
-    if(view.nm.NUMBER_FROM_EXTRA) {
-        SETTINGS_NUMBER_FROM_EXTRA = [];
-        for(var i = 1; i < SETTINGS_NUMBER_FROM_EXTRA_COUNT; i++) {
-            SETTINGS_NUMBER_FROM_EXTRA[i] = view.nm.NUMBER_FROM_EXTRA[i].integerValue();
+    SETTINGS_NUMBER_AMOUNT = view.nm.NUMBER_AMOUNT.integerValue();
 
-            if(
-                view.nm.NUMBER_FROM_EXTRA[i].stringValue() != '' && (
-                    !verifyInteger(view.nm.NUMBER_FROM_EXTRA[i], "From number") ||
-                    !verifyGreaterThan0(view.nm.NUMBER_FROM_EXTRA[i], "From number")
-                )
-            ) {
-                return false;
-            }
-        }
+    if(!verifyInteger(view.nm.NUMBER_AMOUNT, "Generate amount") || !verifyGreaterThan0(view.nm.NUMBER_AMOUNT, "Generate amount")) {
+        return false;
+    }
+
+    // Direction
+
+    if(view.nm.NUMBER_DIRECTION) {
+        SETTINGS_NUMBER_DIRECTION = NUMBER_DIRECTIONS[view.nm.NUMBER_DIRECTION.indexOfSelectedItem()];
     }
 
     // return
@@ -163,7 +151,7 @@ function createBasicView(alert) {
 
     view.nm.NUMBER_AMOUNT = createInput(
         view,
-        "Amount",
+        "Generate amount",
         SETTINGS_NUMBER_AMOUNT,
         R(0, lineY+3, labelWidth, 25),
         R(inputX, lineY, 200, 25)
@@ -241,10 +229,10 @@ function createAdvancedView(alert) {
     );
     lineY += 30;
 
-    view.nm.NUMBER_AMOUNT = createInput(
+    view.nm.NUMBER_FROM = createInput(
         view,
-        "Amount",
-        SETTINGS_NUMBER_AMOUNT,
+        "Start from number",
+        SETTINGS_NUMBER_FROM,
         R(0, lineY+3, labelWidth, 25),
         R(inputX, lineY, 200, 25)
     );
@@ -257,38 +245,25 @@ function createAdvancedView(alert) {
         R(0, lineY+3, labelWidth, 25),
         R(inputX, lineY, 200, 25)
     );
-    lineY += 50;
-
-    // Number from
-
-    createLabel(
-        view,
-        "- - - - - - - - - - - -      Number from      - - - - - - - - - - - -",
-        R(0, lineY, dialogWidth, 25)
-    );
     lineY += 30;
 
-    view.nm.NUMBER_FROM = createInput(
+    view.nm.NUMBER_AMOUNT = createInput(
         view,
-        SETTINGS_NAME_TO_REPLACE + "-1" + " or just " + SETTINGS_NAME_TO_REPLACE,
-        SETTINGS_NUMBER_FROM,
+        "Generate amount",
+        SETTINGS_NUMBER_AMOUNT,
         R(0, lineY+3, labelWidth, 25),
         R(inputX, lineY, 200, 25)
     );
     lineY += 30;
 
-    view.nm.NUMBER_FROM_EXTRA = [];
-    for(var i = 1; i < SETTINGS_NUMBER_FROM_EXTRA_COUNT; i++) {
-        var val = SETTINGS_NUMBER_FROM_EXTRA[i] || '';
-        view.nm.NUMBER_FROM_EXTRA[i] = createInput(
-            view,
-            SETTINGS_NAME_TO_REPLACE + "-" + (i+1),
-            val,
-            R(0, lineY+3, labelWidth, 25),
-            R(inputX, lineY, 200, 25)
-        );
-        lineY += 30;
-    }
+    view.nm.NUMBER_DIRECTION = createCombobox(
+        view,
+        "Numbering direction",
+        SETTINGS_NUMBER_DIRECTION,
+        R(0, lineY+3, labelWidth, 25),
+        R(inputX, lineY, 200, 25),
+        NUMBER_DIRECTIONS
+    );
 
     return view;
 }
