@@ -56,12 +56,7 @@ function onRun(context) {
         // get numbers to replace
 
         var namesToReplace = getNamesToReplaces(selectedArtboards);
-    
-        if (SETTINGS_NUMBER_DIRECTION == NUMBER_DIRECTION_DRILL) {
-            var replaceDict = generateReplaceDictionaryDrill(namesToReplace);
-        } else {
-            var replaceDict = generateReplaceDictionaryDirect(namesToReplace);
-        }
+        var replaceDict = generateReplaceDictionary(namesToReplace);
 
         // replace text
 
@@ -117,39 +112,46 @@ function getNamesToReplaces(selectedArtboards) {
 
 // Generate replace dictionary
 
-function generateReplaceDictionaryDirect(namesToReplaces) {
+function generateReplaceDictionary(namesToReplaces) {
 
     // order
 
     namesToReplaces.sort(function(a,b) {return a-b});
+
+    // calculate functions
+
+    var numberCalculation;
+
+    if(SETTINGS_NUMBER_DIRECTION == NUMBER_DIRECTION_DRILL) {
+        numberCalculation = function(i_page, i_layer) {
+            return SETTINGS_NUMBER_FROM + i_page * SETTINGS_NUMBER_STEP + i_layer * SETTINGS_NUMBER_AMOUNT;
+        }
+    } else {
+        numberCalculation = function(i_page, i_layer) {
+            return SETTINGS_NUMBER_FROM + i_page * namesToReplaces.length * SETTINGS_NUMBER_STEP + i_layer * SETTINGS_NUMBER_STEP;
+        }
+    }
 
     // generate
 
     var replaceDict = [];
     var prefix = SETTINGS_NAME_TO_REPLACE.toLowerCase();
 
-    var currentNumber = SETTINGS_NUMBER_FROM;
-
-    for(var i = 0; i < SETTINGS_NUMBER_AMOUNT; i++) {
+    for(var i_page = 0; i_page < SETTINGS_NUMBER_AMOUNT; i_page++) {
         var page = {};
-        for(var j = 0; j < namesToReplaces.length; j++) {
-            var name = namesToReplaces[j];
-            page[prefix + '-' + name] = currentNumber;
+        for(var i_layer = 0; i_layer < namesToReplaces.length; i_layer++) {
+            var name = namesToReplaces[i_layer];
+            var number = numberCalculation(i_page, i_layer);
+            page[prefix + '-' + name] = number;
             if(name == 1) {
-                page[prefix] = currentNumber;
+                page[prefix] = number;
             }
-            currentNumber += SETTINGS_NUMBER_STEP;
         }
         replaceDict.push(page);
     }
 
     return replaceDict;
 }
-
-function generateReplaceDictionaryDrill(namesToReplaces) {
-    throw 'Not yet implemented';
-}
-
 
 // Replace placeholders in artboard
 
