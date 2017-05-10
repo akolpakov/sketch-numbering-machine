@@ -68,7 +68,7 @@ function onRun(context) {
 
         //showMessage("Export");
 
-        var exportName = 'Numbering machine [FROM ' + generateNextNumber(SETTINGS_NUMBER_FROM) + '; STEP ' + SETTINGS_NUMBER_STEP + '; AMOUNT ' + SETTINGS_NUMBER_AMOUNT +']';
+        var exportName = 'Numbering machine [FROM ' + SETTINGS_NUMBER_FROM + '; STEP ' + SETTINGS_NUMBER_STEP + '; AMOUNT ' + SETTINGS_NUMBER_AMOUNT +']';
 
         pageToPDF(tempPage, exportName);
 
@@ -246,8 +246,14 @@ function generateNextNumber(number) {
 
     // padding
 
-    if(next_number.length < SETTINGS_PAD_SIZE) {
-        next_number = new Array(SETTINGS_PAD_SIZE - next_number.length + 1).join(SETTINGS_PAD_STRING) + next_number;
+    var pad_size = SETTINGS_PAD_SIZE;
+
+    if(SETTINGS_ALGORITHM != '') {
+        pad_size = pad_size - 1;      // We expect check digit
+    }
+
+    if(next_number.length < pad_size) {
+        next_number = new Array(pad_size - next_number.length + 1).join(SETTINGS_PAD_STRING) + next_number;
     }
 
     // template
