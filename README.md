@@ -19,9 +19,9 @@
 
 ### Basic
 
-`Number from` - From which number should we start numbering
+`Start from number` - From which number we should start the numbering
 
-`Amount` - Amount of pages generated
+`Generate amount` - Amount of pages to be generated
 
 ### Advanced
 
@@ -32,23 +32,15 @@
 `Check digit` - Apply [check digit algorithm](https://en.wikipedia.org/wiki/Check_digit) to generated number. Supported algorithms:
 - [**Damm Algorithm**](https://en.wikipedia.org/wiki/Damm_algorithm)
 
-`Amount` - Amount of pages generated
+`Start from number` - From which number we should start the numbering
 
 `Step` - Generate numbers with step (default 1).
 
-`Number form` - Set of settings to define starting number for each number on your artboards. 
-Several generators could be useful if you have several documents on the one artboard.
-For example, with settings:
+`Generate amount` - Amount of pages to be generated
 
-| Layer | Start from number |
-| ------- |:---:|
-| `NM-1`  | 1   |
-| `NM-2`  | 100 |
-| `NM-3`  | 200 |
-
-- For layers with names `NM-1` number will be generated starting from 1
-- For layers with names `NM-2` number will be generated starting from 100
-- For layers with names `NM-3` number will be generated starting from 200
+`Numbering direction` - Which direction to use for numbering. Very similar to "Layout direction" in printer settings. There are two options:
+- "Direct sequence" (NM-1 -> NM-2 -> NM-3). When we are numbering all layers on the one page, then all on the second and so forth
+- "Drill sequence" (NM-1 -> NM-1 -> ... -> NM-1 -> NM-2 ...). When we are numbering all layers with name `NM-1` on all pages, then numbering all `NM-2` on oll pages and so forth
 
 # License
 [MIT licence](./LICENSE)

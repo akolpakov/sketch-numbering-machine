@@ -84,7 +84,7 @@ function createDialog(advanced) {
 
     SETTINGS_NUMBER_FROM = view.nm.NUMBER_FROM.integerValue();
 
-    if(!verifyInteger(view.nm.NUMBER_FROM, "Number from") || !verifyGreaterThan0(view.nm.NUMBER_FROM, "Number from")) {
+    if(!verifyInteger(view.nm.NUMBER_FROM, "Start number") || !verifyGreaterThan0(view.nm.NUMBER_FROM, "Start number")) {
         return false;
     }
 
@@ -142,7 +142,7 @@ function createBasicView(alert) {
     view.nm = {};
     view.nm.NUMBER_FROM = createInput(
         view,
-        "Number from",
+        "Start from number",
         SETTINGS_NUMBER_FROM,
         R(0, lineY+3, labelWidth, 25),
         R(inputX, lineY, 200, 25)
