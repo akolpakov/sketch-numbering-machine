@@ -267,6 +267,10 @@ function generateNextNumber(number) {
         next_number += calculate_damm_digit(number_for_checksum);
     }
 
+    if (CUSTOM_NUMBER_PROCESSING) {
+        next_number = CUSTOM_NUMBER_PROCESSING(next_number)
+    }
+
     // return
 
     return next_number;
