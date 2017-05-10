@@ -53,19 +53,27 @@ function onRun(context) {
 
     try {
 
+        // get numbers to replace
+
+        var namesToReplace = getNamesToReplaces(selectedArtboards);
+    
+        if (SETTINGS_NUMBER_DIRECTION == NUMBER_DIRECTION_DRILL) {
+            var replaceDict = generateReplaceDictionaryDrill(namesToReplace);
+        } else {
+            var replaceDict = generateReplaceDictionaryDirect(namesToReplace);
+        }
+
         // replace text
 
-        var currentNumber = SETTINGS_NUMBER_FROM;
-
-        for(var i = 0; i < SETTINGS_NUMBER_AMOUNT; i++) {
+        for(var i = 0; i < replaceDict.length; i++) {
+            var replaceDictPage = replaceDict[i];
             //showMessage("Generate page #" + currentNumber);
-            appendArtboards(tempPage, replaceArtboards(selectedArtboards, currentNumber));
-            currentNumber += SETTINGS_NUMBER_STEP;
+            appendArtboards(tempPage, replaceArtboards(selectedArtboards, replaceDictPage));
         }
 
         //showMessage("Export");
 
-        var exportName = 'Numbering machine [' + generateNextNumber(SETTINGS_NUMBER_FROM) + ' - ' + generateNextNumber(currentNumber - SETTINGS_NUMBER_STEP) + ']';
+        var exportName = 'Numbering machine [FROM ' + generateNextNumber(SETTINGS_NUMBER_FROM) + '; STEP ' + SETTINGS_NUMBER_STEP + '; AMOUNT ' + SETTINGS_NUMBER_AMOUNT +']';
 
         pageToPDF(tempPage, exportName);
 
@@ -78,10 +86,74 @@ function onRun(context) {
     showMessage("Done");
 }
 
+// Get Artboard structure
+
+function getNamesToReplaces(selectedArtboards) {
+    var toReplace = [];
+    var re = new RegExp('^' + SETTINGS_NAME_TO_REPLACE + '(-\\d+)?$', 'i');
+
+    for(var i = 0; i < selectedArtboards.count(); i++) {
+        var artboard = selectedArtboards[i];
+
+        var child, childrenLoop = artboard.children().objectEnumerator();
+        while (child = childrenLoop.nextObject()) {
+            if (child.isMemberOfClass(MSTextLayer)) {
+                var layerName = child.name();
+                if(layerName.match(re)) {
+                    var layerId = layerName.replace('nm', '').replace('-', '');
+                    if (!layerId) {
+                        layerId = 1;
+                    }
+                    if(toReplace.indexOf(layerId) < 0) {
+                        toReplace.push(layerId);
+                    }
+                }
+            }
+        }
+    }
+    return toReplace;
+}
+
+
+// Generate replace dictionary
+
+function generateReplaceDictionaryDirect(namesToReplaces) {
+
+    // order
+
+    namesToReplaces.sort(function(a,b) {return a-b});
+
+    // generate
+
+    var replaceDict = [];
+    var prefix = SETTINGS_NAME_TO_REPLACE.toLowerCase();
+
+    var currentNumber = SETTINGS_NUMBER_FROM;
+
+    for(var i = 0; i < SETTINGS_NUMBER_AMOUNT; i++) {
+        var page = {};
+        for(var j = 0; j < namesToReplaces.length; j++) {
+            var name = namesToReplaces[j];
+            page[prefix + '-' + name] = currentNumber;
+            if(name == 1) {
+                page[prefix] = currentNumber;
+            }
+            currentNumber += SETTINGS_NUMBER_STEP;
+        }
+        replaceDict.push(page);
+    }
+
+    return replaceDict;
+}
+
+function generateReplaceDictionaryDrill(namesToReplaces) {
+    throw 'Not yet implemented';
+}
+
 
 // Replace placeholders in artboard
 
-function replaceArtboards(selectedArtboards, currentNumber) {
+function replaceArtboards(selectedArtboards, replaceDict) {
     var replacedArtboards = NSMutableArray.array();
 
     var replacementFound = false;
@@ -92,17 +164,11 @@ function replaceArtboards(selectedArtboards, currentNumber) {
         var child, childrenLoop = artboard.children().objectEnumerator();
         while (child = childrenLoop.nextObject()) {
             if (child.isMemberOfClass(MSTextLayer)) {
-                if(child.name() == SETTINGS_NAME_TO_REPLACE || child.name() == SETTINGS_NAME_TO_REPLACE + '-1') {
-                    child.setStringValue(generateNextNumber(currentNumber));
+                var name = child.name().toLowerCase();
+                var number = replaceDict[name];
+                if(number) {
+                    child.setStringValue(generateNextNumber(number));
                     replacementFound = true;
-                }
-                for(var j = 1; j < SETTINGS_NUMBER_FROM_EXTRA_COUNT; j++) {
-                    if(SETTINGS_NUMBER_FROM_EXTRA[j]) {
-                        if (child.name() == SETTINGS_NAME_TO_REPLACE + '-' + (j+1)) {
-                            child.setStringValue(generateNextNumber(currentNumber + SETTINGS_NUMBER_FROM_EXTRA[j] - SETTINGS_NUMBER_FROM));
-                            replacementFound = true;
-                        }
-                    }
                 }
             }
         }
