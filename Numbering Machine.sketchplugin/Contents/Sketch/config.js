@@ -31,6 +31,10 @@ var SETTINGS_NUMBER_STEP = 1;
 var SETTINGS_NUMBER_AMOUNT = 10;
 var SETTINGS_NUMBER_DIRECTION = NUMBER_DIRECTION_DIRECT;
 
+var SETTINGS_DETACH_SYMBOLS = false;     // TODO: put to settings dialog
+
+// Custom processing
+
 var CUSTOM_NUMBER_PROCESSING = function(number) {
     return number.substring(0, 3) + '-' + number.substring(3, 6);
 };
