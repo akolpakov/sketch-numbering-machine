@@ -41,7 +41,9 @@ function onRun(context) {
         }
     }
 
-    detachSymbols(selectedArtboards);
+    if(SETTINGS_DETACH_SYMBOLS) {
+        detachSymbols(selectedArtboards);
+    }
 
     //showMessage("Selected " + selectedArtboards.count() + " artboards");
 
