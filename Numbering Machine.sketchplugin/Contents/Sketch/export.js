@@ -95,7 +95,7 @@ function getNamesToReplaces(selectedArtboards) {
         var child, childrenLoop = artboard.children().objectEnumerator();
         while (child = childrenLoop.nextObject()) {
             if (child.isMemberOfClass(MSTextLayer)) {
-                var layerName = child.name();
+                var layerName = child.name().toLowerCase();
                 if(layerName.match(re)) {
                     var layerId = layerName.replace('nm', '').replace('-', '');
                     if (!layerId) {
