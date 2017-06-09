@@ -3,7 +3,7 @@
   "description": "Sketch plugin to generate PDF document out of selected artboards with numbers in place of placeholder",
   "author": "Andrey Kolpakov",
   "homepage": "http://github.com/aakolpakov/sketch-numbering-machine",
-  "version": "0.2",
+  "version": "0.3",
   "identifier": "com.sketchapp.aakolpakov.sketch-numbering-machine",
   "commands": [
     {
