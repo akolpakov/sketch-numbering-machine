@@ -6,8 +6,6 @@ function onRun(context) {
 
     var showMessage = context.document.showMessage;
 
-    //showMessage("Start Numbering Machine");
-
     // check selected dashboard
 
     var selection = context.selection;
@@ -25,6 +23,10 @@ function onRun(context) {
         showMessage("Cancelled");
         return;
     }
+
+    // init pdf
+
+    var pdf = PDFDocument.alloc().init();
 
     // get selected artboards
 
@@ -45,13 +47,7 @@ function onRun(context) {
         detachSymbols(selectedArtboards);
     }
 
-    //showMessage("Selected " + selectedArtboards.count() + " artboards");
-
-    // create temporary page
-
-    var tempPage = MSPage.new();
-    tempPage.setName("Numbering Machine");
-    context.document.documentData().addPage(tempPage);
+    // generate pages for export
 
     try {
 
@@ -64,24 +60,27 @@ function onRun(context) {
 
         for(var i = 0; i < replaceDict.length; i++) {
             var replaceDictPage = replaceDict[i];
-            //showMessage("Generate page #" + currentNumber);
-            appendArtboards(tempPage, replaceArtboards(selectedArtboards, replaceDictPage));
+            var artboards = replaceArtboards(selectedArtboards, replaceDictPage);
+            appendToPdf(context, pdf, artboards)
         }
 
-        //showMessage("Export");
+        // export
 
         var exportName = 'Numbering machine [FROM ' + SETTINGS_NUMBER_FROM + '; STEP ' + SETTINGS_NUMBER_STEP + '; AMOUNT ' + SETTINGS_NUMBER_AMOUNT +']';
-
-        pageToPDF(tempPage, exportName);
+        var pdfLocation = dialogSaveLocation(exportName);
+        if (pdfLocation) {
+            pdf.writeToURL(pdfLocation);
+        } else {
+            showMessage("Cancelled");
+        }
 
     } catch(e) {
         createErrorBox(e);
     }
 
-    context.document.documentData().removePage(tempPage);
-
     showMessage("Done");
 }
+
 
 // Get Artboard structure
 
@@ -95,7 +94,7 @@ function getNamesToReplaces(selectedArtboards) {
         var child, childrenLoop = artboard.children().objectEnumerator();
         while (child = childrenLoop.nextObject()) {
             if (child.isMemberOfClass(MSTextLayer)) {
-                var layerName = child.name();
+                var layerName = child.name().toLowerCase();
                 if(layerName.match(re)) {
                     var layerId = layerName.replace('nm', '').replace('-', '');
                     if (!layerId) {
@@ -279,9 +278,19 @@ function generateNextNumber(number) {
 }
 
 
-// Export to PDF
+// Append To PDF
 
-function pageToPDF(page, exportName) {
-    var pageArray = [page];
-    MSPDFBookExporter.exportPages_defaultFilename(pageArray, exportName + ".pdf");
+function appendToPdf(context, pdf, artboards) {
+    var tempPage = MSPage.new();
+    tempPage.setName("Numbering Machine");
+    context.document.documentData().addPage(tempPage);
+
+    appendArtboards(tempPage, artboards);
+
+    for(var j = 0; j < artboards.count(); j++) {
+        var artboard_pdf = MSPDFBookExporter.pdfFromArtboard(artboards[j]);
+        pdf.insertPage_atIndex(artboard_pdf, pdf.pageCount())
+    }
+
+    context.document.documentData().removePage(tempPage);
 }

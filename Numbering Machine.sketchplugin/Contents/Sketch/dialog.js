@@ -309,3 +309,16 @@ function createErrorBox(text) {
     alert.addButtonWithTitle('Ok');
     return alert.runModal();
 }
+
+function dialogSaveLocation(file_name) {
+
+  var dialog = NSSavePanel.savePanel();
+  dialog.setNameFieldStringValue(file_name);
+  dialog.setAllowedFileTypes(["pdf"]);
+
+  if (dialog.runModal() == NSOKButton) {
+      return dialog.URL();
+  } else {
+      return null;
+  }
+}
